@@ -515,21 +515,20 @@ const OrderTable = () => {
           className="fixed inset-0 bg-black opacity-70"
           onClick={() => setIsCustomizeOpen(false)}
         />
-        <div className="relative z-50 w-full max-w-md max-h-[90vh] bg-white rounded-lg shadow-xl overflow-hidden">
-          <div className="p-6 custom-dialog-content">
+        <div className="relative z-50 w-full max-w-[95%] sm:max-w-md max-h-[90vh] bg-white rounded-lg shadow-xl overflow-hidden mx-2">
+          <div className="p-3 sm:p-6 custom-dialog-content">
             <div className="mb-4">
-              <h2 className="text-xl font-semibold">
+              <h2 className="text-lg sm:text-xl font-semibold">
                 Customize Order Statuses
               </h2>
-              <p className="text-gray-500 mt-1">
+              <p className="text-gray-500 mt-1 text-sm sm:text-base">
                 Update the status for any order by selecting from the dropdown
               </p>
             </div>
-            <div className="py-4">
+            <div className="py-2 sm:py-4">
               <div
                 ref={scrollContainerRef}
-                className="space-y-4 max-h-[60vh] overflow-y-auto pr-1"
-                // Add onScroll event to continuously track scroll position
+                className="space-y-3 sm:space-y-4 max-h-[50vh] sm:max-h-[60vh] overflow-y-auto pr-1"
                 onScroll={(e) => {
                   scrollPositionRef.current = e.currentTarget.scrollTop;
                 }}
@@ -537,21 +536,21 @@ const OrderTable = () => {
                 {orders.map((order) => (
                   <div
                     key={order.id}
-                    className="grid grid-cols-4 items-center gap-4 py-2 border-b relative"
+                    className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4 py-2 border-b relative"
                   >
-                    <label className="text-right font-medium">
+                    <label className="font-medium sm:text-right text-sm sm:text-base">
                       {order.id}:
                     </label>
-                    <div className="col-span-3 relative">
+                    <div className="col-span-1 sm:col-span-3 relative">
                       <div className="status-dropdown-container">
                         <button
                           type="button"
-                          className={`flex w-full justify-between items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ${getStatusColor(
+                          className={`flex w-full justify-between items-center rounded-md border border-gray-300 bg-white px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm ${getStatusColor(
                             orderStatuses[order.id] || order.status
                           )}`}
                           onClick={(e) => {
                             e.stopPropagation();
-                            saveScrollPosition(); // Save position when opening dropdown
+                            saveScrollPosition();
                             setOpenDropdownId(
                               openDropdownId === order.id ? null : order.id
                             );
@@ -567,16 +566,16 @@ const OrderTable = () => {
                           <div
                             className="absolute left-0 mt-1 w-full rounded-md border border-gray-200 bg-white shadow-lg z-50"
                             style={{
-                              top: "100%", // Position below the button
-                              maxHeight: "144px", // Constrain height
-                              overflowY: "auto", // Enable internal scrolling
+                              top: "100%",
+                              maxHeight: "144px",
+                              overflowY: "auto",
                             }}
                           >
                             <ul className="py-1">
                               {statusOptions.map((status) => (
                                 <li
                                   key={status}
-                                  className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${getStatusColor(
+                                  className={`px-3 py-2 cursor-pointer hover:bg-gray-100 text-xs sm:text-sm ${getStatusColor(
                                     status
                                   )}`}
                                   onClick={(e) => {
@@ -601,9 +600,19 @@ const OrderTable = () => {
                 ))}
               </div>
             </div>
-            <div className="mt-6 flex justify-end space-x-2">
-              <Button onClick={() => setIsCustomizeOpen(false)}>Cancel</Button>
-              <Button onClick={handleSave}>Save Changes</Button>
+            <div className="mt-4 sm:mt-6 flex justify-end space-x-2">
+              <Button
+                onClick={() => setIsCustomizeOpen(false)}
+                className="text-xs sm:text-sm py-1 px-2 sm:py-2 sm:px-4"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSave}
+                className="text-xs sm:text-sm py-1 px-2 sm:py-2 sm:px-4"
+              >
+                Save Changes
+              </Button>
             </div>
           </div>
         </div>
@@ -612,42 +621,42 @@ const OrderTable = () => {
   };
 
   return (
-    <div className="p-6 font-semibold relative">
+    <div className="p-2 sm:p-6 font-semibold relative">
       {/* Sort Button */}
       <div className="relative dropdown-container inline-block">
         <Button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           variant="outline"
-          className="mb-4 border-[#8F8C8C] px-10 text-xl py-5 rounded-xl border-2 font-medium"
+          className="mb-4 border-[#8F8C8C] px-4 sm:px-10 text-base sm:text-xl py-2 sm:py-5 rounded-xl border-2 font-medium"
         >
           Sort
         </Button>
         {isDropdownOpen && (
-          <div className="absolute left-0 top-full mt-2 bg-white border border-gray-300 shadow-lg rounded-md w-48 z-50">
+          <div className="absolute left-0 top-full mt-2 bg-white border border-gray-300 shadow-lg rounded-md w-40 sm:w-48 z-50">
             <button
               onClick={sortByDate}
-              className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
+              className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 transition text-sm sm:text-base"
             >
               Sort by Date
             </button>
             <div className="relative">
               <button
                 onClick={() => setIsPriceDropdownOpen(!isPriceDropdownOpen)}
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
+                className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 transition text-sm sm:text-base"
               >
                 Sort by Price ▸
               </button>
               {isPriceDropdownOpen && (
-                <div className="absolute left-full top-0 ml-2 bg-white border border-gray-300 shadow-lg rounded-md w-48 z-50">
+                <div className="absolute left-0 sm:left-full top-full sm:top-0 mt-1 sm:mt-0 sm:ml-2 bg-white border border-gray-300 shadow-lg rounded-md w-40 sm:w-48 z-50">
                   <button
                     onClick={sortByPriceLowToHigh}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
+                    className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 transition text-sm sm:text-base"
                   >
                     Low to High
                   </button>
                   <button
                     onClick={sortByPriceHighToLow}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
+                    className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 transition text-sm sm:text-base"
                   >
                     High to Low
                   </button>
@@ -656,7 +665,7 @@ const OrderTable = () => {
             </div>
             <button
               onClick={sortByProduct}
-              className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
+              className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 transition text-sm sm:text-base"
             >
               Sort by Product
             </button>
@@ -666,11 +675,11 @@ const OrderTable = () => {
 
       {/* Active Filter Indicator */}
       {activeFilter && (
-        <div className="inline-flex items-center ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full">
+        <div className="inline-flex items-center ml-2 sm:ml-4 px-2 sm:px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs sm:text-sm">
           <span>{activeFilter}</span>
           <button
             onClick={resetFilters}
-            className="ml-2 text-blue-600 hover:text-blue-800"
+            className="ml-1 sm:ml-2 text-blue-600 hover:text-blue-800"
           >
             ✕
           </button>
@@ -679,112 +688,132 @@ const OrderTable = () => {
 
       {/* Orders Table */}
       <Card className="shadow-lg rounded-lg overflow-hidden">
-        <CardContent className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl">Latest Orders</h2>
+        <CardContent className="p-2 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2 sm:gap-0">
+            <h2 className="text-lg sm:text-xl">Latest Orders</h2>
             <div className="flex gap-2">
               <Button
                 variant="outline"
-                className="bg-[#f7f7f7] border-transparent hover:underline"
+                className="bg-[#f7f7f7] border-transparent hover:underline text-xs sm:text-sm py-1 px-2 sm:py-2 sm:px-4"
                 onClick={() => setIsCustomizeOpen(true)}
               >
                 Customize
               </Button>
               <Button
                 variant="ghost"
-                className="hover:underline"
+                className="hover:underline text-xs sm:text-sm py-1 px-2 sm:py-2 sm:px-4"
                 onClick={exportToPDF}
               >
                 Export
               </Button>
             </div>
           </div>
-          <div className="overflow-x-auto">
-            <Table className="w-full border border-gray-300 rounded-lg shadow-md">
-              <TableHeader className="bg-gray-200 text-gray-700">
-                <TableRow>
-                  <TableHead>Order ID</TableHead>
-                  <TableHead>Product</TableHead>
-                  <TableHead>Order Date</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Payment</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orders.map((order, index) => (
-                  <TableRow
-                    key={`${order.id}-${index}`}
-                    className="border-t hover:bg-gray-100 transition"
-                  >
-                    <TableCell>{order.id}</TableCell>
-                    <TableCell>{order.product}</TableCell>
-                    <TableCell>{order.date}</TableCell>
-                    <TableCell>{order.price}</TableCell>
-                    <TableCell>{order.payment}</TableCell>
-                    <TableCell
-                      className={`font-semibold ${getStatusColor(
-                        order.status
-                      )}`}
-                    >
-                      {order.status}
-                    </TableCell>
-                    <TableCell>
-                      <div className="relative action-menu-container">
-                        <button
-                          className="font-bold text-gray-700 hover:text-gray-900"
-                          onClick={(e) => setOpenActionMenuId(order.id)}
-                        >
-                          ...
-                        </button>
-                        {openActionMenuId === order.id && (
-                          <div
-                            className="rounded-md border border-gray-200 bg-white shadow-lg"
-                            style={{
-                              position: "absolute",
-                              top: "100%",
-                              right: "0",
-                              width: "200px",
-                              zIndex: 100,
-                            }}
-                          >
-                            <div className="py-1">
-                              <button
-                                className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
-                                onClick={() => filterByDateRange(3)}
-                              >
-                                Order by last 3 months
-                              </button>
-                              <button
-                                className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
-                                onClick={() => filterByDateRange(6)}
-                              >
-                                Order by last 6 months
-                              </button>
-                              <button
-                                className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
-                                onClick={() => filterByDateRange(12)}
-                              >
-                                Order by last 12 months
-                              </button>
-                              {activeFilter && (
-                                <button
-                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition text-blue-600"
-                                  onClick={resetFilters}
-                                >
-                                  Show all orders
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
+          <div className="overflow-x-auto -mx-2 sm:mx-0">
+            <div className="min-w-[640px] px-2 sm:px-0 sm:min-w-full">
+              <Table className="w-full border border-gray-300 rounded-lg shadow-md">
+                <TableHeader className="bg-gray-100 text-gray-900">
+                  <TableRow>
+                    <TableHead className="text-xs sm:text-sm text-gray-900">
+                      Order ID
+                    </TableHead>
+                    <TableHead className="text-xs sm:text-sm text-gray-900">
+                      Product
+                    </TableHead>
+                    <TableHead className="text-xs sm:text-sm text-gray-900">
+                      Order Date
+                    </TableHead>
+                    <TableHead className="text-xs sm:text-sm text-gray-900">Price</TableHead>
+                    <TableHead className="text-xs sm:text-sm text-gray-900">
+                      Payment
+                    </TableHead>
+                    <TableHead className="text-xs sm:text-sm text-gray-900">Status</TableHead>
+                    <TableHead className="text-xs sm:text-sm text-gray-900">Action</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {orders.map((order, index) => (
+                    <TableRow
+                      key={`${order.id}-${index}`}
+                      className="border-t hover:bg-gray-100 transition"
+                    >
+                      <TableCell className="text-xs sm:text-sm py-2 sm:py-4">
+                        {order.id}
+                      </TableCell>
+                      <TableCell className="text-xs sm:text-sm py-2 sm:py-4">
+                        {order.product}
+                      </TableCell>
+                      <TableCell className="text-xs sm:text-sm py-2 sm:py-4">
+                        {order.date}
+                      </TableCell>
+                      <TableCell className="text-xs sm:text-sm py-2 sm:py-4">
+                        {order.price}
+                      </TableCell>
+                      <TableCell className="text-xs sm:text-sm py-2 sm:py-4">
+                        {order.payment}
+                      </TableCell>
+                      <TableCell
+                        className={`font-semibold text-xs sm:text-sm py-2 sm:py-4 ${getStatusColor(
+                          order.status
+                        )}`}
+                      >
+                        {order.status}
+                      </TableCell>
+                      <TableCell className="py-2 sm:py-4">
+                        <div className="relative action-menu-container">
+                          <button
+                            className="font-bold text-gray-700 hover:text-gray-900"
+                            onClick={(e) => setOpenActionMenuId(order.id)}
+                          >
+                            ...
+                          </button>
+                          {openActionMenuId === order.id && (
+                            <div
+                              className="rounded-md border border-gray-200 bg-white shadow-lg"
+                              style={{
+                                position: "absolute",
+                                top: "100%",
+                                right: "0",
+                                width: "160px",
+                                zIndex: 100,
+                              }}
+                            >
+                              <div className="py-1">
+                                <button
+                                  className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 transition text-xs sm:text-sm"
+                                  onClick={() => filterByDateRange(3)}
+                                >
+                                  Order by last 3 months
+                                </button>
+                                <button
+                                  className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 transition text-xs sm:text-sm"
+                                  onClick={() => filterByDateRange(6)}
+                                >
+                                  Order by last 6 months
+                                </button>
+                                <button
+                                  className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 transition text-xs sm:text-sm"
+                                  onClick={() => filterByDateRange(12)}
+                                >
+                                  Order by last 12 months
+                                </button>
+                                {activeFilter && (
+                                  <button
+                                    className="block w-full text-left px-3 sm:px-4 py-2 hover:bg-gray-100 transition text-blue-600 text-xs sm:text-sm"
+                                    onClick={resetFilters}
+                                  >
+                                    Show all orders
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -794,17 +823,24 @@ const OrderTable = () => {
 
       {/* Confirmation Dialog */}
       <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-        <AlertDialogContent className="bg-white">
+        <AlertDialogContent className="bg-white mx-4 w-[95%] max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-lg sm:text-xl">
+              Are you sure?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm sm:text-base">
               You are about to update order statuses. This action cannot be
               undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirm}>
+          <AlertDialogFooter className="sm:space-x-2 flex flex-col sm:flex-row gap-2 sm:gap-0">
+            <AlertDialogCancel className="text-xs sm:text-sm py-1.5 px-3 sm:py-2 sm:px-4">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirm}
+              className="text-xs sm:text-sm py-1.5 px-3 sm:py-2 sm:px-4"
+            >
               Yes, update it
             </AlertDialogAction>
           </AlertDialogFooter>
