@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -62,6 +61,7 @@ const OrderTable = () => {
   const [openActionMenuId, setOpenActionMenuId] = useState<string | null>(null);
   const actionMenuRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const scrollPositionRef = useRef<number>(0);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   // Initialize order statuses
   useEffect(() => {
@@ -71,6 +71,160 @@ const OrderTable = () => {
     });
     setOrderStatuses(initialStatuses);
   }, [orders]);
+
+  // Function to parse date strings in the format "Feb 11, 10:25 am"
+  // Completely rewritten date parsing function
+  const parseOrderDate = (dateString) => {
+    try {
+      // Example format: "Feb 11, 10:25 am"
+      const parts = dateString.match(/(\w+)\s+(\d+),\s+(\d+):(\d+)\s+(\w+)/);
+
+      if (!parts) {
+        console.error("Date string doesn't match expected format:", dateString);
+        return null;
+      }
+
+      const monthNames = {
+        Jan: 0,
+        Feb: 1,
+        Mar: 2,
+        Apr: 3,
+        May: 4,
+        Jun: 5,
+        Jul: 6,
+        Aug: 7,
+        Sep: 8,
+        Oct: 9,
+        Nov: 10,
+        Dec: 11,
+      };
+
+      const month = monthNames[parts[1]];
+      const day = parseInt(parts[2]);
+      let hour = parseInt(parts[3]);
+      const minute = parseInt(parts[4]);
+      const ampm = parts[5].toLowerCase();
+
+      // Validate month
+      if (month === undefined) {
+        console.error("Invalid month in date string:", dateString);
+        return null;
+      }
+
+      // Validate day
+      if (day < 1 || day > 31) {
+        console.error("Invalid day in date string:", dateString);
+        return null;
+      }
+
+      // Handle AM/PM
+      if (ampm === "pm" && hour < 12) hour += 12;
+      if (ampm === "am" && hour === 12) hour = 0;
+
+      // Use current year
+      const currentYear = new Date().getFullYear();
+
+      // Create the date object
+      let date = new Date(currentYear, month, day, hour, minute);
+
+      // If the date is in the future, assume it's from the previous year
+      if (date > new Date()) {
+        date.setFullYear(currentYear - 1);
+      }
+
+      // Check if the date is valid
+      if (date.getMonth() !== month || date.getDate() !== day) {
+        console.error("Invalid date in date string:", dateString);
+        return null;
+      }
+
+      return date;
+    } catch (error) {
+      console.error("Error parsing date:", dateString, error);
+      return null;
+    }
+  };
+
+  // Completely rewritten filter function
+  const filterByDateRange = (months) => {
+    // Validate months input
+    if (months < 1 || months > 120) {
+      console.error("Invalid months value:", months);
+      toast("Invalid Filter", {
+        description: "Please select a valid time range (1-120 months).",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Calculate date range
+    const today = new Date();
+    const startDate = new Date();
+    startDate.setMonth(today.getMonth() - months);
+
+    // Set times to beginning/end of day for accurate comparison
+    startDate.setHours(0, 0, 0, 0);
+    today.setHours(23, 59, 59, 999);
+
+    console.log("Filter range:", {
+      from: startDate.toISOString(),
+      to: today.toISOString(),
+    });
+
+    // Filter orders
+    const filteredOrders = [];
+
+    for (const order of originalOrders) {
+      const orderDate = parseOrderDate(order.date);
+
+      // Skip invalid dates
+      if (!orderDate) {
+        console.warn(
+          `Skipping order ${order.id} due to invalid date format: ${order.date}`
+        );
+        continue;
+      }
+
+      // Debug log for individual orders
+      console.log(
+        `Order ${order.id} date: ${order.date} → ${orderDate.toISOString()}`
+      );
+
+      // Check if date is in range
+      if (orderDate >= startDate && orderDate <= today) {
+        filteredOrders.push(order);
+        console.log(`✓ Order ${order.id} is within range`);
+      } else {
+        console.log(`✗ Order ${order.id} is outside range`);
+      }
+    }
+
+    // Apply filter
+    console.log(
+      `Filtered ${originalOrders.length} → ${filteredOrders.length} orders`
+    );
+
+    setOrders(filteredOrders);
+    setOpenActionMenuId(null);
+    setActiveFilter(`Last ${months} Months`);
+
+    toast(`Filter Applied`, {
+      description: `Showing ${filteredOrders.length} orders from the last ${months} months`,
+      duration: 3000,
+    });
+  };
+
+  // Reset filters
+  const resetFilters = () => {
+    setOrders(originalOrders);
+    setOpenActionMenuId(null);
+    setActiveFilter(null);
+
+    toast(`Filter Cleared`, {
+      description: "Showing all orders",
+      duration: 3000,
+    });
+  };
 
   // Export to PDF
   const exportToPDF = () => {
@@ -228,12 +382,21 @@ const OrderTable = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, [isCustomizeOpen]);
 
-  // Sorting Functions
   const sortByDate = () => {
     setOrders(
-      [...orders].sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-      )
+      [...orders].sort((a, b) => {
+        // Parse dates for both orders
+        const dateA = parseOrderDate(a.date);
+        const dateB = parseOrderDate(b.date);
+
+        // Handle cases where parsing fails (null values)
+        if (!dateA && !dateB) return 0; // Both dates are invalid, treat as equal
+        if (!dateA) return 1; // Move invalid dateA to the end
+        if (!dateB) return -1; // Move invalid dateB to the end
+
+        // Compare valid dates
+        return dateA.getTime() - dateB.getTime();
+      })
     );
     setIsDropdownOpen(false);
   };
@@ -313,7 +476,6 @@ const OrderTable = () => {
     });
   };
 
-  // Custom dialog component
   // Custom dialog component
   const CustomDialog = () => {
     // Store scroll position in a ref
@@ -502,6 +664,19 @@ const OrderTable = () => {
         )}
       </div>
 
+      {/* Active Filter Indicator */}
+      {activeFilter && (
+        <div className="inline-flex items-center ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full">
+          <span>{activeFilter}</span>
+          <button
+            onClick={resetFilters}
+            className="ml-2 text-blue-600 hover:text-blue-800"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Orders Table */}
       <Card className="shadow-lg rounded-lg overflow-hidden">
         <CardContent className="p-6">
@@ -575,15 +750,32 @@ const OrderTable = () => {
                             }}
                           >
                             <div className="py-1">
-                              <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition">
+                              <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
+                                onClick={() => filterByDateRange(3)}
+                              >
                                 Order by last 3 months
                               </button>
-                              <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition">
+                              <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
+                                onClick={() => filterByDateRange(6)}
+                              >
                                 Order by last 6 months
                               </button>
-                              <button className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition">
+                              <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
+                                onClick={() => filterByDateRange(12)}
+                              >
                                 Order by last 12 months
                               </button>
+                              {activeFilter && (
+                                <button
+                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition text-blue-600"
+                                  onClick={resetFilters}
+                                >
+                                  Show all orders
+                                </button>
+                              )}
                             </div>
                           </div>
                         )}
