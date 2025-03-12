@@ -52,13 +52,13 @@ const FeedbackPage: React.FC = () => {
       <div className="bg-white p-8 rounded-md shadow-sm border">
         <h2 className="text-4xl font-normal mb-6">Feedback</h2>
 
-        {/* Feedback Input */}
-        <div className="mb-6">
-          <label className="block font-medium mb-3 text-lg">
-            Write Feeback
+        {/* Feedback Input with Overlapping Label */}
+        <div className="mb-6 relative">
+          <label className="absolute -top-3 left-4 px-1 bg-white text-lg font-medium z-10">
+            Write Feedback
           </label>
           <textarea
-            className={`w-full p-4 rounded h-36 transition-colors duration-200 ${
+            className={`w-full p-4 pt-6 rounded h-36 transition-colors duration-200 ${
               isFocused
                 ? "border-2 border-black text-black"
                 : "border border-[#a0a9be] text-[#A0A9BE]"
