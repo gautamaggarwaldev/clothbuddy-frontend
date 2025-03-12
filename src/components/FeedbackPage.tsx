@@ -8,7 +8,7 @@ const FeedbackPage: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
 
   const handleSubmit = () => {
-    if (feedback.trim() === "" || rating === 0) {
+    if (feedback.trim() === "" && rating === 0) {
       toast(
         <div className="flex items-center space-x-2">
           <span role="img" aria-label="warning emoji" className="text-xl">
@@ -16,14 +16,57 @@ const FeedbackPage: React.FC = () => {
           </span>
           <p>Please submit both feedback and rating.</p>
         </div>,
-        {
+        { 
           style: {
             backgroundColor: "#FEF3C7", 
             color: "#92400E", 
             border: "1px solid #F59E0B", 
           },
+          duration: 2000, 
         }
       );
+      return;
+    }
+
+    if (feedback.trim() === "" && rating !== 0) {
+      toast(
+        <div className="flex items-center space-x-2">
+          <span role="img" aria-label="warning emoji" className="text-xl">
+            ⚠️
+          </span>
+          <p>Please write some feedback.</p>
+        </div>,
+        { 
+          style: {
+            backgroundColor: "#FEF3C7", 
+            color: "#92400E", 
+            border: "1px solid #F59E0B", 
+          },
+          duration: 2000,
+        }
+      );
+      setRating(0);
+      return;
+    }
+
+    if (feedback.trim() !== "" && rating === 0) {
+      toast(
+        <div className="flex items-center space-x-2">
+          <span role="img" aria-label="warning emoji" className="text-xl">
+            ⚠️
+          </span>
+          <p>Please select a rating.</p>
+        </div>,
+        { 
+          style: {
+            backgroundColor: "#FEF3C7", 
+            color: "#92400E", 
+            border: "1px solid #F59E0B", 
+          },
+          duration: 2000,
+        }
+      );
+      setFeedback("");
       return;
     }
 
@@ -33,7 +76,8 @@ const FeedbackPage: React.FC = () => {
           🙏
         </span>
         <p>Thank you for your feedback!</p>
-      </div>
+      </div>,
+      { duration: 2000 } 
     );
 
     setFeedback("");
@@ -52,7 +96,6 @@ const FeedbackPage: React.FC = () => {
       <div className="bg-white p-8 rounded-md shadow-sm border">
         <h2 className="text-4xl font-normal mb-6">Feedback</h2>
 
-        {/* Feedback Input with Overlapping Label */}
         <div className="mb-6 relative">
           <label className="absolute -top-3 left-4 px-1 bg-white text-lg font-medium z-10">
             Write Feedback
